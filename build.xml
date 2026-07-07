@@ -791,9 +791,11 @@
 		</copy>
 
 		<!-- compile -->
+		<property name="javafx.lib" value="${basedir}/lib/javafx" />
 		<javac srcdir="${dir.source}" destdir="${dir.build}" release="${jvm.version}" encoding="utf-8" debug="yes" debuglevel="lines,vars,source" includeAntRuntime="no">
 			<classpath>
 				<fileset dir="${dir.dist}/lib" />
+				<fileset dir="${javafx.lib}" includes="*-win.jar" />
 			</classpath>
 		</javac>
 
