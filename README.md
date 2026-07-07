@@ -1,32 +1,57 @@
-# FileBot
+# FileBot — Fork with HTTP Server
 
-This is a fork of the official FileBot source code on **23 Mar 2018** for version **4.8.0**.
-The repo has unfortunately since been taken offline. It appears like the developer [rednoah](https://github.com/rednoah) has decided to try and make money off this software which originally rose in popularity due to its open source nature.
+This is a fork of the FileBot source code (v4.8.0), with a built-in HTTP REST API and web UI added on top.
 
-rednoah has:
-* Added nagware to the original software to promote sales
-* Made it intentionally harder to build the software
-* Censored/removed posts on forums they moderate
-* Deceived the community who supported the software
-* Finally, removed the open source code from Github.
+## What's new
 
-Stop making absurd excuses like "there were no other contributors" which is a complete lie. Just say you want to make money, there is nothing wrong with that but you can't seem to admit it.
+Unlike the original CLI-only FileBot, this fork embeds a lightweight HTTP server (`com.sun.net.httpserver`, JDK 17 built-in) that exposes FileBot's core operations via REST endpoints and serves a browser-based interface.
 
-# Original Fork Point
-If you are interested in the original fork point check out the [fork-point](../../tree/fork-point/) branch.
+### Features
 
-# Newer Fork
-Looks like another newer fork is available here: https://github.com/deleted-repo/filebot
+- **REST API** — All major FileBot operations are available as JSON endpoints:
+  - `POST /api/rename` — Rename files via TheTVDB / TheMovieDB / AniDB
+  - `POST /api/subtitles` — Fetch subtitles from OpenSubtitles
+  - `POST /api/extract` — Extract archives (RAR, 7z, ZIP)
+  - `POST /api/mediainfo` — Read media file properties
+  - `POST /api/list` — List episodes from online databases
+  - `POST /api/check` — Compute / verify SFV, SHA1, SHA256, MD5
+  - `POST /api/revert` — Revert previously renamed files
+  - `POST /api/script` — Run FileBot scripts (e.g. AMC)
+  - `GET/POST /api/settings` — Read / update working directory and language
+  - `GET /api/status` — Server health check
+  - `GET /api/log` — Live log output (poll-based SSE)
+  - `GET /api/files` — List directory contents
 
-# Building
-It is possible to build the source code as a standalone jar or as an self signed UWP app.
+- **Web UI** — Full browser interface with sidebar navigation, form-based API calls, live output panel, and connection status indicator
 
-# Binaries/Releases
-Check out the releases for some releases.
+- **i18n** — English and Italian translations; can be extended with additional `web/i18n/*.json` files
 
-Also check out this repo more up to date sources/releases: https://github.com/barry-allen07/FB-Mod
+- **Server flags** — `-http` starts the server, `--port N` sets the port (default 5454)
 
-# Licence
-The FileBot source code is available for your convenience.
+- **Thread safety** — Write operations (rename, subtitles, extract, check, revert, script) are serialised on a single-thread executor
 
-I will keep this repo under the same licence (which was modified for more greed) [MODIFIED DON'T BE A DICK PUBLIC LICENSE](../master/LICENSE.md).
+## Build
+
+Requires JDK 17+ and Apache Ant.
+
+```sh
+ant fatjar
+```
+
+Output: `dist/FileBot_4.8.0.jar`
+
+## Run
+
+```sh
+java -jar dist/FileBot_4.8.0.jar -http --port 5454
+```
+
+Open http://localhost:5454 in your browser.
+
+## Fork base
+
+Original fork point preserved in the [`fork-point`](https://github.com/rednoah/filebot/tree/fork-point) branch.
+
+## License
+
+Same license as the original project.

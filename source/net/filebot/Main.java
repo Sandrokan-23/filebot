@@ -37,6 +37,7 @@ import net.filebot.cli.ArgumentBean;
 import net.filebot.cli.ArgumentProcessor;
 import net.filebot.format.ExpressionFormat;
 import net.filebot.platform.mac.MacAppUtilities;
+import net.filebot.server.FileBotServer;
 import net.filebot.platform.windows.WinAppUtilities;
 import net.filebot.ui.FileBotMenuBar;
 import net.filebot.ui.GettingStartedStage;
@@ -110,6 +111,18 @@ public class Main {
 
 			// initialize history spooler
 			HistorySpooler.getInstance().setPersistentHistoryEnabled(useRenameHistory());
+
+			// HTTP server mode => start REST API server and block
+			if (args.runHttp()) {
+				FileBotServer server = new FileBotServer(args.port);
+				log.addHandler(server.getLogCapture());
+				debug.addHandler(server.getLogCapture());
+				server.start();
+				Object wait = new Object();
+				synchronized (wait) {
+					wait.wait();
+				}
+			}
 
 			// CLI mode => run command-line interface and then exit
 			if (args.runCLI()) {
@@ -375,6 +388,9 @@ public class Main {
 		if (args.runCLI()) {
 			// CLI logging settings
 			log.setLevel(args.getLogLevel());
+		} else if (args.runHttp()) {
+			// HTTP server logging settings
+			log.setLevel(Level.INFO);
 		} else {
 			// GUI logging settings
 			log.setLevel(Level.INFO);

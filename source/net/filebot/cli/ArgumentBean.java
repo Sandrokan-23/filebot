@@ -141,6 +141,12 @@ public class ArgumentBean {
 	@Option(name = "--def", usage = "Define script variables", handler = BindingsHandler.class)
 	public Map<String, String> defines = new LinkedHashMap<String, String>();
 
+	@Option(name = "-http", usage = "Start HTTP server")
+	public boolean http = false;
+
+	@Option(name = "--port", usage = "HTTP server port", metaVar = "port")
+	public int port = 5454;
+
 	@Option(name = "-exec", usage = "Execute command", metaVar = "command", handler = RestOfArgumentsHandler.class)
 	public List<String> exec = new ArrayList<String>();
 
@@ -149,6 +155,10 @@ public class ArgumentBean {
 
 	public boolean runCLI() {
 		return rename || getSubtitles || check || list || mediaInfo || revert || extract || script != null;
+	}
+
+	public boolean runHttp() {
+		return http;
 	}
 
 	public boolean isInteractive() {

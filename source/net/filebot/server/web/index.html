@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="app.title">FileBot</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span data-i18n="app.title">FileBot</span>
+    </div>
+    <nav id="nav">
+      <a class="nav-item active" data-tab="status" href="#status"><span>&#9679;</span> <span data-i18n="nav.status">Status</span></a>
+      <a class="nav-item" data-tab="settings" href="#settings"><span>&#9881;</span> <span data-i18n="nav.settings">Settings</span></a>
+      <a class="nav-item" data-tab="rename" href="#rename"><span>&#9998;</span> <span data-i18n="nav.rename">Rename</span></a>
+      <a class="nav-item" data-tab="subtitles" href="#subtitles"><span>&#9835;</span> <span data-i18n="nav.subtitles">Subtitles</span></a>
+      <a class="nav-item" data-tab="extract" href="#extract"><span>&#128451;</span> <span data-i18n="nav.extract">Extract</span></a>
+      <a class="nav-item" data-tab="mediainfo" href="#mediainfo"><span>&#8505;</span> <span data-i18n="nav.mediainfo">MediaInfo</span></a>
+      <a class="nav-item" data-tab="list" href="#list"><span>&#9776;</span> <span data-i18n="nav.list">List</span></a>
+      <a class="nav-item" data-tab="check" href="#check"><span>&#10003;</span> <span data-i18n="nav.check">Check</span></a>
+      <a class="nav-item" data-tab="revert" href="#revert"><span>&#8634;</span> <span data-i18n="nav.revert">Revert</span></a>
+      <a class="nav-item" data-tab="script" href="#script"><span>&#9654;</span> <span data-i18n="nav.script">Script</span></a>
+    </nav>
+    <div id="connection">
+      <span id="status-dot" class="dot-offline"></span>
+      <span id="status-label" data-i18n="connection.offline">Offline</span>
+    </div>
+  </aside>
+
+  <div id="main">
+    <div id="content">
+      <!-- Status tab -->
+      <section id="tab-status" class="tab active">
+        <h2 data-i18n="tab.status.title">Server Status</h2>
+        <div id="server-info" class="info-grid"></div>
+        <div id="working-dir-info" class="info-row"><span class="label" data-i18n="tab.settings.wd">Working Dir</span><span id="wd-display"> &mdash;</span></div>
+      </section>
+
+      <!-- Settings tab -->
+      <section id="tab-settings" class="tab">
+        <h2 data-i18n="tab.settings.title">Settings</h2>
+        <div class="card">
+          <label class="field">
+            <span class="field-label" data-i18n="tab.settings.wd">Working Directory</span>
+            <span class="field-desc" data-i18n="tab.settings.wdDesc">Base path where FileBot will look for files</span>
+            <div class="field-row">
+              <input type="text" id="settings-wd" placeholder="/path/to/media">
+            </div>
+          </label>
+          <label class="field">
+            <span class="field-label" data-i18n="tab.settings.lang">Language</span>
+            <span class="field-desc" data-i18n="tab.settings.langDesc">UI language</span>
+            <select id="settings-lang">
+              <option value="en" data-i18n="lang.en">English</option>
+              <option value="it" data-i18n="lang.it">Italiano</option>
+            </select>
+          </label>
+          <button id="btn-save-settings" class="btn btn-primary" data-i18n="btn.save">Save</button>
+        </div>
+        <div class="card" id="wd-files-card" style="display:none">
+          <h3 data-i18n="tab.settings.dirContents">Directory contents</h3>
+          <div id="wd-files"></div>
+        </div>
+      </section>
+
+      <!-- Rename tab -->
+      <section id="tab-rename" class="tab">
+        <h2 data-i18n="tab.rename.title">Rename Files</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="rename">
+            <label class="field">
+              <span class="field-label" data-i18n="field.files">Files</span>
+              <textarea name="files" rows="3" placeholder="file.mkv"></textarea>
+            </label>
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.action">Action</span><select name="action"><option value="move">Move</option><option value="copy">Copy</option><option value="keeplink">Keep Link</option><option value="symlink">Symlink</option><option value="hardlink">Hardlink</option><option value="test">Test</option></select></label>
+              <label class="field"><span class="field-label" data-i18n="field.conflict">Conflict</span><select name="conflict"><option value="skip">Skip</option><option value="override">Override</option><option value="auto">Auto</option><option value="index">Index</option><option value="fail">Fail</option></select></label>
+              <label class="field"><span class="field-label" data-i18n="field.order">Order</span><select name="order"><option value="Airdate">Airdate</option><option value="Absolute">Absolute</option><option value="DVD">DVD</option></select></label>
+            </div>
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.db">DB</span><input name="db" placeholder="TheTVDB / TheMovieDB"></label>
+              <label class="field"><span class="field-label" data-i18n="field.query">Query</span><input name="query" placeholder="Series name"></label>
+              <label class="field"><span class="field-label" data-i18n="field.output">Output</span><input name="output" placeholder="/output/path"></label>
+            </div>
+            <label class="field"><span class="field-label" data-i18n="field.format">Format</span><input name="format" placeholder="{plex}"></label>
+            <label class="field"><span class="field-label" data-i18n="field.filter">Filter</span><input name="filter" placeholder="y > 2015"></label>
+            <label class="field checkbox"><input type="checkbox" name="nonStrict"> <span data-i18n="field.nonStrict">Non-strict mode</span></label>
+            <button type="submit" class="btn btn-primary" data-i18n="nav.rename">Rename</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Subtitles tab -->
+      <section id="tab-subtitles" class="tab">
+        <h2 data-i18n="tab.subtitles.title">Get Subtitles</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="subtitles">
+            <label class="field"><span class="field-label" data-i18n="field.files">Files</span><textarea name="files" rows="3" placeholder="video.mkv"></textarea></label>
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.lang">Language</span><input name="lang" value="en" placeholder="en / it / de"></label>
+              <label class="field"><span class="field-label" data-i18n="field.query">Query</span><input name="query" placeholder="Series name"></label>
+              <label class="field"><span class="field-label" data-i18n="field.output">Output Format</span><select name="output"><option value="">Default</option><option value="srt">SRT</option><option value="vtt">VTT</option><option value="ass">ASS</option></select></label>
+            </div>
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.encoding">Encoding</span><input name="encoding" placeholder="UTF-8"></label>
+              <label class="field"><span class="field-label" data-i18n="field.naming">Naming</span><select name="naming"><option value="MATCH_VIDEO_ADD_LANGUAGE_TAG">Match + Lang</option><option value="MATCH_VIDEO">Match Video</option><option value="ORIGINAL">Original</option></select></label>
+              <label class="field"></label>
+            </div>
+            <div class="field-row-2">
+              <label class="field checkbox"><input type="checkbox" name="missingOnly" checked> <span data-i18n="field.missingOnly">Missing only</span></label>
+              <label class="field checkbox"><input type="checkbox" name="nonStrict"> <span data-i18n="field.nonStrict">Non-strict mode</span></label>
+            </div>
+            <button type="submit" class="btn btn-primary" data-i18n="nav.subtitles">Get Subtitles</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Extract tab -->
+      <section id="tab-extract" class="tab">
+        <h2 data-i18n="tab.extract.title">Extract Archives</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="extract">
+            <label class="field"><span class="field-label" data-i18n="field.files">Files</span><textarea name="files" rows="3" placeholder="archive.rar"></textarea></label>
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.output">Output</span><input name="output" placeholder="/output/path"></label>
+              <label class="field"><span class="field-label" data-i18n="field.conflict">Conflict</span><select name="conflict"><option value="skip">Skip</option><option value="override">Override</option><option value="auto">Auto</option><option value="index">Index</option><option value="fail">Fail</option></select></label>
+              <label class="field checkbox"><input type="checkbox" name="forceExtractAll"> <span data-i18n="field.forceExtractAll">Force all</span></label>
+            </div>
+            <button type="submit" class="btn btn-primary" data-i18n="nav.extract">Extract</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- MediaInfo tab -->
+      <section id="tab-mediainfo" class="tab">
+        <h2 data-i18n="tab.mediainfo.title">Media Info</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="mediainfo">
+            <label class="field"><span class="field-label" data-i18n="field.files">Files</span><textarea name="files" rows="3" placeholder="video.mkv"></textarea></label>
+            <label class="field"><span class="field-label" data-i18n="field.format">Format</span><input name="format" placeholder="{fn} / {resolution} / {vcodec}"></label>
+            <button type="submit" class="btn btn-primary" data-i18n="tab.mediainfo.title">Get Info</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- List tab -->
+      <section id="tab-list" class="tab">
+        <h2 data-i18n="tab.list.title">List Episodes</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="list">
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.db">DB</span><select name="db"><option value="TheTVDB">TheTVDB</option><option value="TheMovieDB">TheMovieDB</option><option value="AniDB">AniDB</option></select></label>
+              <label class="field"><span class="field-label" data-i18n="field.query">Query</span><input name="query" placeholder="Series name" required></label>
+              <label class="field"><span class="field-label" data-i18n="field.order">Order</span><select name="order"><option value="Airdate">Airdate</option><option value="Absolute">Absolute</option><option value="DVD">DVD</option></select></label>
+            </div>
+            <label class="field"><span class="field-label" data-i18n="field.format">Format</span><input name="format" placeholder="{s00e00} - {t}"></label>
+            <label class="field"><span class="field-label" data-i18n="field.filter">Filter</span><input name="filter" placeholder="s > 1"></label>
+            <label class="field checkbox"><input type="checkbox" name="nonStrict"> <span data-i18n="field.nonStrict">Non-strict mode</span></label>
+            <button type="submit" class="btn btn-primary" data-i18n="nav.list">List Episodes</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Check tab -->
+      <section id="tab-check" class="tab">
+        <h2 data-i18n="tab.check.title">Check / Compute Hashes</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="check">
+            <label class="field"><span class="field-label" data-i18n="field.files">Files</span><textarea name="files" rows="3" placeholder="file.sfv"></textarea></label>
+            <div class="field-row-3">
+              <label class="field"><span class="field-label" data-i18n="field.output">Output</span><input name="output" placeholder="output.sfv"></label>
+              <label class="field"><span class="field-label" data-i18n="field.hash">Hash</span><select name="hash"><option value="SFV">SFV</option><option value="SHA1">SHA1</option><option value="SHA256">SHA256</option><option value="MD5">MD5</option></select></label>
+              <label class="field"><span class="field-label" data-i18n="field.encoding">Encoding</span><input name="encoding" placeholder="UTF-8"></label>
+            </div>
+            <button type="submit" class="btn btn-primary" data-i18n="tab.check.title">Check / Compute</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Revert tab -->
+      <section id="tab-revert" class="tab">
+        <h2 data-i18n="tab.revert.title">Revert Files</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="revert">
+            <label class="field"><span class="field-label" data-i18n="field.files">Files</span><textarea name="files" rows="3" placeholder="renamed/file.mkv"></textarea></label>
+            <label class="field"><span class="field-label" data-i18n="field.action">Action</span><select name="action"><option value="move">Move</option><option value="copy">Copy</option><option value="keeplink">Keep Link</option><option value="symlink">Symlink</option><option value="hardlink">Hardlink</option></select></label>
+            <button type="submit" class="btn btn-primary" data-i18n="tab.revert.title">Revert</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Script tab -->
+      <section id="tab-script" class="tab">
+        <h2 data-i18n="tab.script.title">Run Script</h2>
+        <div class="card">
+          <form class="api-form" data-endpoint="script">
+            <label class="field"><span class="field-label" data-i18n="field.script">Script</span><input name="script" placeholder="fn:amc" required></label>
+            <label class="field"><span class="field-label" data-i18n="field.files">Files</span><textarea name="files" rows="3" placeholder="/path/to/files"></textarea></label>
+            <label class="field"><span class="field-label" data-i18n="field.definitions">Definitions (key=value, one per line)</span><textarea name="def" rows="4" placeholder="music=y&#10;artwork=y&#10;ut_dir=/output"></textarea></label>
+            <button type="submit" class="btn btn-primary" data-i18n="tab.script.title">Run Script</button>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <div id="output-panel">
+      <div id="output-header">
+        <span id="output-title" data-i18n="output.title">Output</span>
+        <div id="output-actions">
+          <button id="btn-clear-log" class="btn btn-small" data-i18n="output.clear">Clear</button>
+          <button id="btn-toggle-log" class="btn btn-small">&#9650;</button>
+        </div>
+      </div>
+      <pre id="output-content"></pre>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
