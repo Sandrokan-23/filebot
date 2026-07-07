@@ -38,12 +38,12 @@ Requires JDK 17+ and Apache Ant.
 ant fatjar
 ```
 
-Output: `dist/FileBot_4.8.0.jar`
+Output: `dist/FileBot_5.1.0.jar`
 
 ## Run
 
 ```sh
-java -jar dist/FileBot_4.8.0.jar -http --port 5454
+java -jar dist/FileBot_5.1.0.jar -http --port 5454
 ```
 
 Open http://localhost:5454 in your browser.
