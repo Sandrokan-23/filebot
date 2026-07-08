@@ -199,16 +199,31 @@
   });
 
   // ---- Settings ----
+  var SETTINGS_FIELDS = ['workingDirectory', 'language', 'format', 'db', 'action', 'conflict', 'order', 'filter', 'nonStrict', 'output', 'subtitlesLanguage', 'subtitlesOutput', 'subtitlesEncoding', 'subtitlesNaming', 'subtitlesMissingOnly'];
+
   function loadSettings() {
     api('settings').then(function (json) {
       if (json.status === 'ok' && json.data) {
         state.settings = json.data;
-        $('#settings-wd').value = json.data.workingDirectory || '';
-        $('#settings-lang').value = json.data.language || 'en';
-        $('#wd-display').textContent = json.data.workingDirectory || '\u2014';
+        applySettingsToUI(json.data);
         if (json.data.workingDirectory) loadDirectory(json.data.workingDirectory);
       }
     }).catch(function () {});
+  }
+
+  function applySettingsToUI(data) {
+    SETTINGS_FIELDS.forEach(function (key) {
+      var el = $('#settings-' + key);
+      if (!el) return;
+      var val = data[key];
+      if (val === undefined || val === null) val = '';
+      if (el.type === 'checkbox') {
+        el.checked = val === true || val === 'true';
+      } else {
+        el.value = val;
+      }
+    });
+    $('#wd-display').textContent = data.workingDirectory || '\u2014';
   }
 
   function loadDirectory(dir) {
@@ -229,20 +244,38 @@
     }).catch(function () {});
   }
 
-  $('#btn-save-settings').addEventListener('click', function () {
-    var wd = $('#settings-wd').value.trim();
-    var lang = $('#settings-lang').value;
-    setBusy(true);
-    var payload = {};
-    if (wd !== state.settings.workingDirectory) payload.workingDirectory = wd;
-    if (lang !== state.settings.language) payload.language = lang;
-    if (Object.keys(payload).length === 0) { setBusy(false); return; }
+  function readSettingsFromUI() {
+    var data = {};
+    SETTINGS_FIELDS.forEach(function (key) {
+      var el = $('#settings-' + key);
+      if (!el) return;
+      if (el.type === 'checkbox') {
+        data[key] = el.checked;
+      } else {
+        data[key] = el.value;
+      }
+    });
+    return data;
+  }
 
+  $('#btn-save-settings').addEventListener('click', function () {
+    var current = readSettingsFromUI();
+    var payload = {};
+    SETTINGS_FIELDS.forEach(function (key) {
+      var v = current[key];
+      var sv = state.settings[key];
+      if (typeof v === 'boolean' ? v !== sv : v !== (sv || '')) {
+        payload[key] = v;
+      }
+    });
+    if (Object.keys(payload).length === 0) { return; }
+
+    setBusy(true);
     api('settings', payload).then(function (json) {
       if (json.status === 'ok') {
         writeOutput(t('output.saved'));
         state.settings = json.data;
-        $('#wd-display').textContent = json.data.workingDirectory || '\u2014';
+        applySettingsToUI(json.data);
         if (json.data.language) loadLanguage(json.data.language);
         if (json.data.workingDirectory) loadDirectory(json.data.workingDirectory);
       }
@@ -254,12 +287,11 @@
   // ---- Init ----
   // load saved language, then start polling
   api('settings').then(function (json) {
-    if (json.status === 'ok' && json.data && json.data.language) {
+    if (json.status === 'ok' && json.data) {
       state.settings = json.data;
-      $('#settings-wd').value = json.data.workingDirectory || '';
-      $('#settings-lang').value = json.data.language;
-      $('#wd-display').textContent = json.data.workingDirectory || '\u2014';
-      return loadLanguage(json.data.language);
+      applySettingsToUI(json.data);
+      var lang = json.data.language || 'en';
+      return loadLanguage(lang);
     }
     return loadLanguage('en');
   }).then(function () {

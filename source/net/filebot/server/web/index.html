@@ -59,6 +59,107 @@
               <option value="it" data-i18n="lang.it">Italiano</option>
             </select>
           </label>
+
+          <hr>
+
+          <h3 data-i18n="tab.settings.renameDefaults">Rename defaults</h3>
+
+          <label class="field">
+            <span class="field-label" data-i18n="field.format">Format</span>
+            <span class="field-desc" data-i18n="tab.settings.formatDesc">Naming expression (e.g. {plex})</span>
+            <input type="text" id="settings-format" placeholder="{plex}">
+          </label>
+          <div class="field-row-3">
+            <label class="field">
+              <span class="field-label" data-i18n="field.db">DB</span>
+              <select id="settings-db">
+                <option value="TheTVDB">TheTVDB</option>
+                <option value="TheMovieDB">TheMovieDB</option>
+                <option value="AniDB">AniDB</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field-label" data-i18n="field.action">Action</span>
+              <select id="settings-action">
+                <option value="move">Move</option>
+                <option value="copy">Copy</option>
+                <option value="keeplink">Keep Link</option>
+                <option value="symlink">Symlink</option>
+                <option value="hardlink">Hardlink</option>
+                <option value="test">Test</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field-label" data-i18n="field.conflict">Conflict</span>
+              <select id="settings-conflict">
+                <option value="skip">Skip</option>
+                <option value="override">Override</option>
+                <option value="auto">Auto</option>
+                <option value="index">Index</option>
+                <option value="fail">Fail</option>
+              </select>
+            </label>
+          </div>
+          <div class="field-row-3">
+            <label class="field">
+              <span class="field-label" data-i18n="field.order">Order</span>
+              <select id="settings-order">
+                <option value="Airdate">Airdate</option>
+                <option value="Absolute">Absolute</option>
+                <option value="DVD">DVD</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field-label" data-i18n="field.output">Output</span>
+              <input type="text" id="settings-output" placeholder="/output/path">
+            </label>
+            <label class="field checkbox">
+              <input type="checkbox" id="settings-nonStrict"> <span data-i18n="field.nonStrict">Non-strict mode</span>
+            </label>
+          </div>
+          <label class="field">
+            <span class="field-label" data-i18n="field.filter">Filter</span>
+            <span class="field-desc" data-i18n="tab.settings.filterDesc">Expression to filter episodes (optional)</span>
+            <input type="text" id="settings-filter" placeholder="y > 2015">
+          </label>
+
+          <hr>
+
+          <h3 data-i18n="tab.settings.subtitleDefaults">Subtitle defaults</h3>
+
+          <div class="field-row-3">
+            <label class="field">
+              <span class="field-label" data-i18n="field.lang">Language</span>
+              <input type="text" id="settings-subtitlesLanguage" placeholder="en">
+            </label>
+            <label class="field">
+              <span class="field-label" data-i18n="field.output">Output Format</span>
+              <select id="settings-subtitlesOutput">
+                <option value="">Default</option>
+                <option value="srt">SRT</option>
+                <option value="vtt">VTT</option>
+                <option value="ass">ASS</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field-label" data-i18n="field.encoding">Encoding</span>
+              <input type="text" id="settings-subtitlesEncoding" placeholder="UTF-8">
+            </label>
+          </div>
+          <div class="field-row-2">
+            <label class="field">
+              <span class="field-label" data-i18n="field.naming">Naming</span>
+              <select id="settings-subtitlesNaming">
+                <option value="MATCH_VIDEO_ADD_LANGUAGE_TAG">Match + Lang</option>
+                <option value="MATCH_VIDEO">Match Video</option>
+                <option value="ORIGINAL">Original</option>
+              </select>
+            </label>
+            <label class="field checkbox">
+              <input type="checkbox" id="settings-subtitlesMissingOnly" checked> <span data-i18n="field.missingOnly">Missing only</span>
+            </label>
+          </div>
+
           <button id="btn-save-settings" class="btn btn-primary" data-i18n="btn.save">Save</button>
         </div>
         <div class="card" id="wd-files-card" style="display:none">

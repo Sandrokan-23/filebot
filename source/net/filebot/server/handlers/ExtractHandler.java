@@ -7,16 +7,26 @@ import java.util.Map;
 
 import net.filebot.cli.CmdlineOperations;
 import net.filebot.cli.ConflictAction;
+import net.filebot.server.SettingsStore;
 
 public class ExtractHandler extends ApiHandler {
+
+	private final SettingsStore settings;
+
+	public ExtractHandler(SettingsStore settings) {
+		this.settings = settings;
+	}
 
 	@Override
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
 		List<File> files = toFileList(params.get("files"));
-		File output = getString(params, "output") != null ? new File(getString(params, "output")) : null;
-		ConflictAction conflict = getString(params, "conflict") != null ? ConflictAction.forName(getString(params, "conflict")) : ConflictAction.SKIP;
+
+		String outputPath = getString(params, "output", settings.getOutput());
+		File output = outputPath != null && outputPath.length() > 0 ? new File(outputPath) : null;
+
+		ConflictAction conflict = ConflictAction.forName(getString(params, "conflict", settings.getConflict()));
 		boolean forceExtractAll = getBool(params, "forceExtractAll", false);
 
 		List<File> result = cli.extract(files, output, conflict, null, forceExtractAll);

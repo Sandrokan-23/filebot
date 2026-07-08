@@ -100,6 +100,11 @@ public abstract class ApiHandler implements HttpHandler {
 		return v == null ? null : v.toString();
 	}
 
+	protected String getString(Map<String, Object> params, String key, String defaultValue) {
+		String v = getString(params, key);
+		return v != null ? v : defaultValue;
+	}
+
 	protected int getInt(Map<String, Object> params, String key, int defaultValue) {
 		Object v = params.get(key);
 		if (v == null) return defaultValue;

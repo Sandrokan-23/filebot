@@ -8,15 +8,24 @@ import java.util.Map;
 import net.filebot.RenameAction;
 import net.filebot.StandardRenameAction;
 import net.filebot.cli.CmdlineOperations;
+import net.filebot.server.SettingsStore;
 
 public class RevertHandler extends ApiHandler {
+
+	private final SettingsStore settings;
+
+	public RevertHandler(SettingsStore settings) {
+		this.settings = settings;
+	}
 
 	@Override
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
 		List<File> files = toFileList(params.get("files"));
-		RenameAction action = getString(params, "action") != null ? StandardRenameAction.forName(getString(params, "action")) : null;
+
+		String actionStr = getString(params, "action", settings.getAction());
+		RenameAction action = actionStr != null ? StandardRenameAction.forName(actionStr) : null;
 
 		List<File> result = cli.revert(files, null, action);
 		return toPathList(result);

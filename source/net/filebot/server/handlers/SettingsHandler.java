@@ -14,10 +14,8 @@ public class SettingsHandler extends ApiHandler {
 
 	@Override
 	protected Object handle(Map<String, Object> params) throws Exception {
-		// POST with setting keys updates them; GET just returns current settings
-		if (params.containsKey("workingDirectory") || params.containsKey("language")) {
-			store.apply(params);
-		}
+		// apply any settings keys that were sent
+		store.apply(params);
 		return store.getAll();
 	}
 

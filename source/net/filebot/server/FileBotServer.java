@@ -29,13 +29,13 @@ public class FileBotServer {
 		server.createContext("/api/status", new StatusHandler());
 		server.createContext("/api/settings", new SettingsHandler(settings));
 		server.createContext("/api/files", new FilesHandler(settings));
-		server.createContext("/api/rename", new SerializedHandler(new RenameHandler()));
-		server.createContext("/api/subtitles", new SerializedHandler(new SubtitlesHandler()));
-		server.createContext("/api/extract", new SerializedHandler(new ExtractHandler()));
-		server.createContext("/api/mediainfo", new MediaInfoHandler());
-		server.createContext("/api/list", new ListHandler());
-		server.createContext("/api/check", new SerializedHandler(new CheckHandler()));
-		server.createContext("/api/revert", new SerializedHandler(new RevertHandler()));
+		server.createContext("/api/rename", new SerializedHandler(new RenameHandler(settings)));
+		server.createContext("/api/subtitles", new SerializedHandler(new SubtitlesHandler(settings)));
+		server.createContext("/api/extract", new SerializedHandler(new ExtractHandler(settings)));
+		server.createContext("/api/mediainfo", new MediaInfoHandler(settings));
+		server.createContext("/api/list", new ListHandler(settings));
+		server.createContext("/api/check", new SerializedHandler(new CheckHandler(settings)));
+		server.createContext("/api/revert", new SerializedHandler(new RevertHandler(settings)));
 		server.createContext("/api/script", new SerializedHandler(new ScriptHandler()));
 		server.createContext("/api/log", new LogHandler(logCapture));
 

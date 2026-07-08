@@ -9,15 +9,24 @@ import java.util.stream.Stream;
 
 import net.filebot.cli.CmdlineOperations;
 import net.filebot.format.ExpressionFormat;
+import net.filebot.server.SettingsStore;
 
 public class MediaInfoHandler extends ApiHandler {
+
+	private final SettingsStore settings;
+
+	public MediaInfoHandler(SettingsStore settings) {
+		this.settings = settings;
+	}
 
 	@Override
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
 		List<File> files = toFileList(params.get("files"));
-		ExpressionFormat format = getString(params, "format") != null ? new ExpressionFormat(getString(params, "format")) : null;
+
+		String formatStr = getString(params, "format", settings.getFormat());
+		ExpressionFormat format = formatStr != null && formatStr.length() > 0 ? new ExpressionFormat(formatStr) : null;
 
 		try (Stream<String> stream = cli.getMediaInfo(files, null, format)) {
 			return stream.collect(Collectors.toList());
