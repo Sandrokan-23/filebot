@@ -1,5 +1,7 @@
 package net.filebot.server.handlers;
 
+import static net.filebot.Logging.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -7,13 +9,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import com.cedarsoftware.util.io.JsonReader;
 import com.cedarsoftware.util.io.JsonWriter;
@@ -30,9 +31,8 @@ public abstract class ApiHandler implements HttpHandler {
 	public void handle(HttpExchange exchange) {
 		String path = exchange.getRequestURI().getPath();
 		String method = exchange.getRequestMethod().toUpperCase();
-		String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		try {
-			System.out.println("[" + ts + "] " + method + " " + path);
+			log.fine(() -> method + " " + path);
 
 			exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 			exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -56,14 +56,13 @@ public abstract class ApiHandler implements HttpHandler {
 
 			Object result = handle(params);
 			sendJson(exchange, 200, JsonResult.ok(result));
-			System.out.println("[" + ts + "] " + method + " " + path + " -> 200 OK");
+			log.fine(() -> method + " " + path + " -> 200 OK");
 			return;
 		} catch (ApiException e) {
-			System.err.println("[" + ts + "] " + method + " " + path + " -> " + e.getCode() + " " + e.getMessage());
+			log.warning(() -> method + " " + path + " -> " + e.getCode() + " " + e.getMessage());
 			try { sendJson(exchange, e.getCode(), JsonResult.error(e.getCode(), e.getMessage())); } catch (Exception ignored) { exchange.close(); }
 		} catch (Throwable e) {
-			System.err.println("[" + ts + "] " + method + " " + path + " -> 500 " + (e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
-			e.printStackTrace();
+			log.log(Level.WARNING, method + " " + path + " -> 500 " + (e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()), e);
 			try { sendJson(exchange, 500, JsonResult.error(500, e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage())); } catch (Exception ignored) { exchange.close(); }
 		}
 	}

@@ -60,7 +60,8 @@ public class FileBotServer {
 			FileHandler fh = new FileHandler(logFile.getPath(), 5 * 1024 * 1024, 3, true);
 			fh.setLevel(Level.ALL);
 			fh.setFormatter(new SimpleFormatter());
-			log.getLogger("").addHandler(fh);
+			log.addHandler(fh);
+			debug.addHandler(fh);
 			log.info("Logging to " + logFile.getAbsolutePath());
 		} catch (Exception e) {
 			log.warning("Could not set up file logging: " + e.getMessage());
