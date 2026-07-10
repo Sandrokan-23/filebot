@@ -1021,6 +1021,25 @@ public class MediaDetection {
 				return results;
 			}
 		}
+
+		// if still no results, try without the year
+		for (int n = words.length; n >= 2; n--) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				if (sb.length() > 0) sb.append(" ");
+				sb.append(words[i]);
+			}
+
+			String candidate = sb.toString();
+			debug.finest(format("Progressive query (no year): %s", candidate));
+
+			List<Movie> results = service.searchMovie(candidate, locale);
+			if (!results.isEmpty()) {
+				debug.finest(format("Progressive query found %d result(s) for: %s", results.size(), candidate));
+				return results;
+			}
+		}
+
 		return emptyList();
 	}
 
