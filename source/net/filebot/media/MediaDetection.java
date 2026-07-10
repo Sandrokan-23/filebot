@@ -612,20 +612,8 @@ public class MediaDetection {
 		Set<String> terms = reduceMovieNamePermutations(names);
 		List<Movie> movieNameMatches = matchMovieName(terms, true, 0);
 
-		// skip further queries if collected matches are already sufficient
-		if (movieNameMatches.size() > 0) {
-			options.addAll(movieNameMatches);
-			return sortMoviesBySimilarity(options, terms);
-		}
-
 		if (movieNameMatches.isEmpty()) {
 			movieNameMatches = matchMovieName(terms, strict, 2);
-		}
-
-		// skip further queries if collected matches are already sufficient
-		if (options.size() > 0 && movieNameMatches.size() > 0) {
-			options.addAll(movieNameMatches);
-			return sortMoviesBySimilarity(options, terms);
 		}
 
 		// if matching name+year failed, try matching only by name (in non-strict mode we would have checked these cases already by now)
