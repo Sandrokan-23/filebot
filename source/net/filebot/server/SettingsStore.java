@@ -1,10 +1,17 @@
 package net.filebot.server;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.cedarsoftware.util.io.JsonReader;
+import com.cedarsoftware.util.io.JsonWriter;
+
 public class SettingsStore {
+
+	private final File configFile;
 
 	private String workingDirectory = "";
 	private String language = "en";
@@ -23,6 +30,37 @@ public class SettingsStore {
 	private String subtitlesEncoding = "";
 	private String subtitlesNaming = "MATCH_VIDEO_ADD_LANGUAGE_TAG";
 	private boolean subtitlesMissingOnly = true;
+
+	public SettingsStore(File configFile) {
+		this.configFile = configFile;
+		load();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void load() {
+		if (configFile != null && configFile.isFile()) {
+			try {
+				String json = new String(Files.readAllBytes(configFile.toPath()), "UTF-8");
+				Map<String, Object> data = (Map<String, Object>) JsonReader.jsonToJava(json);
+				apply(data);
+			} catch (Exception e) {
+				System.err.println("Failed to load settings: " + e.getMessage());
+			}
+		}
+	}
+
+	private void save() {
+		if (configFile != null) {
+			try {
+				String json = JsonWriter.objectToJson(getAll());
+				File tmp = new File(configFile.getParentFile(), configFile.getName() + ".tmp");
+				Files.write(tmp.toPath(), json.getBytes("UTF-8"));
+				Files.move(tmp.toPath(), configFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			} catch (Exception e) {
+				System.err.println("Failed to save settings: " + e.getMessage());
+			}
+		}
+	}
 
 	public String getWorkingDirectory() {
 		return workingDirectory;
@@ -189,6 +227,7 @@ public class SettingsStore {
 		if (updates.containsKey("subtitlesEncoding")) setSubtitlesEncoding(updates.get("subtitlesEncoding").toString());
 		if (updates.containsKey("subtitlesNaming")) setSubtitlesNaming(updates.get("subtitlesNaming").toString());
 		if (updates.containsKey("subtitlesMissingOnly")) setSubtitlesMissingOnly("true".equals(updates.get("subtitlesMissingOnly").toString()) || Boolean.parseBoolean(updates.get("subtitlesMissingOnly").toString()));
+		save();
 	}
 
 }

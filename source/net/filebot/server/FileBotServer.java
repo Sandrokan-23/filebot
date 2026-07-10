@@ -2,6 +2,7 @@ package net.filebot.server;
 
 import static net.filebot.Logging.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
@@ -17,9 +18,14 @@ public class FileBotServer {
 	private final HttpServer server;
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final LogCaptureHandler logCapture = new LogCaptureHandler();
-	private final SettingsStore settings = new SettingsStore();
+	private final SettingsStore settings;
 
 	public FileBotServer(int port) throws IOException {
+		this(port, new File(System.getProperty("user.home"), ".filebot-server.json"));
+	}
+
+	public FileBotServer(int port, File configFile) throws IOException {
+		settings = new SettingsStore(configFile);
 		InetSocketAddress addr = new InetSocketAddress("0.0.0.0", port);
 		server = HttpServer.create(addr, 0);
 
