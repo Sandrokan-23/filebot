@@ -233,13 +233,6 @@
 			</zipfileset>
 			<zipfileset src="${dir.dist}/lib/jna.jar">
 				<include name="com/sun/jna/**" />
-
-				<!-- exclude native libraries -->
-				<exclude name="**/*.a" />
-				<exclude name="**/*.so" />
-				<exclude name="**/*.dll" />
-				<exclude name="**/*.dylib" />
-				<exclude name="**/*.jnilib" />
 			</zipfileset>
 			<zipfileset src="${dir.dist}/lib/jna-platform.jar">
 				<include name="com/sun/jna/platform/**" />
