@@ -956,6 +956,34 @@ public class MediaDetection {
 			}
 		}
 
+		// if no results, try progressive word stripping from the right (before year)
+		if (probabilityMap.isEmpty()) {
+			debug.finest("Progressive query stripping...");
+			for (String query : querySet) {
+				List<Movie> stripped = progressiveSearch(query, queryLookupService, locale);
+				if (!stripped.isEmpty()) {
+					for (Movie movie : stripped) {
+						probabilityMap.put(movie, metric.getSimilarity(query, movie));
+					}
+					break;
+				}
+			}
+		}
+
+		// if still no results, try English locale as last resort
+		if (probabilityMap.isEmpty() && !Locale.ENGLISH.equals(locale)) {
+			debug.finest("Retry with English locale...");
+			for (String query : querySet) {
+				List<Movie> stripped = progressiveSearch(query, queryLookupService, Locale.ENGLISH);
+				if (!stripped.isEmpty()) {
+					for (Movie movie : stripped) {
+						probabilityMap.put(movie, metric.getSimilarity(query, movie));
+					}
+					break;
+				}
+			}
+		}
+
 		// sort by similarity to original query (descending)
 		List<Movie> results = new ArrayList<Movie>(probabilityMap.keySet());
 		results.sort((a, b) -> {
@@ -963,6 +991,37 @@ public class MediaDetection {
 		});
 
 		return results;
+	}
+
+	private static List<Movie> progressiveSearch(String query, MovieIdentificationService service, Locale locale) throws Exception {
+		// match "name YYYY"
+		Matcher m = Pattern.compile("^(.+?)\\s+((?:19|20)\\d{2})$").matcher(query.trim());
+		if (!m.matches()) {
+			return emptyList();
+		}
+
+		String[] words = m.group(1).split("\\s+");
+		String year = m.group(2);
+
+		// strip last word iteratively, keep at least 2 words before year
+		for (int n = words.length - 1; n >= 2; n--) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < n; i++) {
+				if (sb.length() > 0) sb.append(" ");
+				sb.append(words[i]);
+			}
+			sb.append(" ").append(year);
+
+			String candidate = sb.toString();
+			debug.finest(format("Progressive query: %s", candidate));
+
+			List<Movie> results = service.searchMovie(candidate, locale);
+			if (!results.isEmpty()) {
+				debug.finest(format("Progressive query found %d result(s) for: %s", results.size(), candidate));
+				return results;
+			}
+		}
+		return emptyList();
 	}
 
 	private static List<String> getUniqueQuerySet(Collection<String> exactMatches, Collection<String>... guessMatches) {
