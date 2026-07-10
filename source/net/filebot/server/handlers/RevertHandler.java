@@ -31,17 +31,6 @@ public class RevertHandler extends ApiHandler {
 		return toPathList(result);
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<File> toFileList(Object obj) {
-		List<File> files = new ArrayList<File>();
-		if (obj instanceof List) {
-			for (Object item : (List<Object>) obj) {
-				files.add(new File(item.toString()));
-			}
-		}
-		return files;
-	}
-
 	private List<String> toPathList(List<File> files) {
 		List<String> paths = new ArrayList<String>();
 		for (File f : files) {

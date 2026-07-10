@@ -44,15 +44,4 @@ public class ScriptHandler extends ApiHandler {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<File> toFileList(Object obj) {
-		List<File> files = new ArrayList<File>();
-		if (obj instanceof List) {
-			for (Object item : (List<Object>) obj) {
-				files.add(new File(item.toString()));
-			}
-		}
-		return files;
-	}
-
 }

@@ -1,12 +1,16 @@
 package net.filebot.server.handlers;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.cedarsoftware.util.io.JsonReader;
@@ -117,6 +121,27 @@ public abstract class ApiHandler implements HttpHandler {
 		if (v == null) return defaultValue;
 		if (v instanceof Boolean) return ((Boolean) v);
 		return "true".equalsIgnoreCase(v.toString()) || "1".equals(v.toString());
+	}
+
+	@SuppressWarnings("unchecked")
+	protected List<File> toFileList(Object obj) {
+		List<File> files = new ArrayList<File>();
+		if (obj instanceof List) {
+			for (Object item : (List<Object>) obj) {
+				files.add(new File(item.toString()));
+			}
+		} else if (obj instanceof Collection) {
+			for (Object item : (Collection<Object>) obj) {
+				files.add(new File(item.toString()));
+			}
+		} else if (obj instanceof String) {
+			files.add(new File((String) obj));
+		} else if (obj instanceof Object[]) {
+			for (Object item : (Object[]) obj) {
+				files.add(new File(item.toString()));
+			}
+		}
+		return files;
 	}
 
 }
