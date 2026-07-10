@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+import java.util.logging.SimpleFormatter;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -30,6 +32,7 @@ public class FileBotServer {
 		server = HttpServer.create(addr, 0);
 
 		logCapture.setLevel(Level.ALL);
+		initFileLogging();
 
 		// API endpoints
 		server.createContext("/api/status", new StatusHandler());
@@ -49,6 +52,19 @@ public class FileBotServer {
 		server.createContext("/", new StaticFileHandler());
 
 		server.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(4));
+	}
+
+	private void initFileLogging() {
+		try {
+			File logFile = new File(System.getProperty("user.home"), ".filebot-server.log");
+			FileHandler fh = new FileHandler(logFile.getPath(), 5 * 1024 * 1024, 3, true);
+			fh.setLevel(Level.ALL);
+			fh.setFormatter(new SimpleFormatter());
+			log.getLogger("").addHandler(fh);
+			log.info("Logging to " + logFile.getAbsolutePath());
+		} catch (Exception e) {
+			log.warning("Could not set up file logging: " + e.getMessage());
+		}
 	}
 
 	public LogCaptureHandler getLogCapture() {

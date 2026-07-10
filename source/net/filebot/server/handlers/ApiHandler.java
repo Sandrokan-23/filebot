@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -26,7 +28,12 @@ public abstract class ApiHandler implements HttpHandler {
 
 	@Override
 	public void handle(HttpExchange exchange) {
+		String path = exchange.getRequestURI().getPath();
+		String method = exchange.getRequestMethod().toUpperCase();
+		String ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		try {
+			System.out.println("[" + ts + "] " + method + " " + path);
+
 			exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
 			exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 			exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
@@ -36,7 +43,6 @@ public abstract class ApiHandler implements HttpHandler {
 				return;
 			}
 
-			String method = exchange.getRequestMethod().toUpperCase();
 			Map<String, Object> params;
 
 			if ("GET".equals(method)) {
@@ -50,10 +56,14 @@ public abstract class ApiHandler implements HttpHandler {
 
 			Object result = handle(params);
 			sendJson(exchange, 200, JsonResult.ok(result));
+			System.out.println("[" + ts + "] " + method + " " + path + " -> 200 OK");
 			return;
 		} catch (ApiException e) {
+			System.err.println("[" + ts + "] " + method + " " + path + " -> " + e.getCode() + " " + e.getMessage());
 			try { sendJson(exchange, e.getCode(), JsonResult.error(e.getCode(), e.getMessage())); } catch (Exception ignored) { exchange.close(); }
 		} catch (Throwable e) {
+			System.err.println("[" + ts + "] " + method + " " + path + " -> 500 " + (e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
+			e.printStackTrace();
 			try { sendJson(exchange, 500, JsonResult.error(500, e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage())); } catch (Exception ignored) { exchange.close(); }
 		}
 	}
