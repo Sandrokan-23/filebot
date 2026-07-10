@@ -58,29 +58,8 @@ public class RenameHandler extends ApiHandler {
 			locale = Locale.ENGLISH;
 		}
 
-		// auto-detect query from filename if not provided
-		if (query == null && files.size() > 0) {
-			query = autoQuery(files.get(0).getName());
-		}
-
 		List<File> result = cli.rename(files, action, conflict, output, format, db, query, order, filter, locale, strict, null);
 		return toPathList(result);
-	}
-
-	private String autoQuery(String name) {
-		// strip extension
-		int dot = name.lastIndexOf('.');
-		String base = dot > 0 ? name.substring(0, dot) : name;
-
-		// remove common release tags: quality, codec, language, release group, etc.
-		base = base.replaceAll("(?i)\\.(PROPER|REPACK|REAL|iTA-?ENG|ENG-?iTA|ITA|ENG|MULTi|SUB|iTALiAN|AC3|DTS|DD5[.]1|AAC|x264|x265|HEVC|Bluray|WEB-DL|WEBRip|HDTV|DVDRip|HDRip|BrRip|1080p|720p|2160p|480p|576p)\\.", ".");
-		base = base.replaceAll("(?i)\\.(PROPER|REPACK|REAL|iTA-?ENG|ENG-?iTA|ITA|ENG|MULTi|SUB|iTALiAN|AC3|DTS|DD5[.]1|AAC|x264|x265|HEVC|Bluray|WEB-DL|WEBRip|HDTV|DVDRip|HDRip|BrRip|1080p|720p|2160p|480p|576p)$", "");
-
-		// keep year but strip trailing release group (last dash-segment)
-		base = base.replaceAll("-\\w+$", "");
-
-		// replace dots/underscores with spaces
-		return base.replaceAll("[._]", " ").trim();
 	}
 
 	private List<String> toPathList(List<File> files) {
