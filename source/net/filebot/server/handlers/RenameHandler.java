@@ -28,7 +28,7 @@ public class RenameHandler extends ApiHandler {
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
-		List<File> files = toFileList(params.get("files"));
+		List<File> files = toFileList(params.get("files"), settings.getWorkingDirectory());
 		RenameAction action = StandardRenameAction.forName(getString(params, "action", settings.getAction()));
 
 		ConflictAction conflict = ConflictAction.forName(getString(params, "conflict", settings.getConflict()));

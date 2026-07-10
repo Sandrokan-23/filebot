@@ -21,7 +21,7 @@ public class ExtractHandler extends ApiHandler {
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
-		List<File> files = toFileList(params.get("files"));
+		List<File> files = toFileList(params.get("files"), settings.getWorkingDirectory());
 
 		String outputPath = getString(params, "output", settings.getOutput());
 		File output = outputPath != null && outputPath.length() > 0 ? new File(outputPath) : null;

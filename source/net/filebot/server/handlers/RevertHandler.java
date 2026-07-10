@@ -22,7 +22,7 @@ public class RevertHandler extends ApiHandler {
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
-		List<File> files = toFileList(params.get("files"));
+		List<File> files = toFileList(params.get("files"), settings.getWorkingDirectory());
 
 		String actionStr = getString(params, "action", settings.getAction());
 		RenameAction action = actionStr != null ? StandardRenameAction.forName(actionStr) : null;

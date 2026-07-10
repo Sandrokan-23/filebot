@@ -23,7 +23,7 @@ public class CheckHandler extends ApiHandler {
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
-		List<File> files = toFileList(params.get("files"));
+		List<File> files = toFileList(params.get("files"), settings.getWorkingDirectory());
 		String outputStr = getString(params, "output", settings.getOutput());
 		File output = outputStr != null && !outputStr.isEmpty() ? new File(outputStr) : null;
 		HashType hash = getString(params, "hash") != null ? parseHashType(getString(params, "hash")) : HashType.SFV;

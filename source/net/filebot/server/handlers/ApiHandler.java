@@ -125,6 +125,10 @@ public abstract class ApiHandler implements HttpHandler {
 
 	@SuppressWarnings("unchecked")
 	protected List<File> toFileList(Object obj) {
+		return toFileList(obj, null);
+	}
+
+	protected List<File> toFileList(Object obj, String fallbackDir) {
 		List<File> files = new ArrayList<File>();
 		if (obj instanceof List) {
 			for (Object item : (List<Object>) obj) {
@@ -139,6 +143,17 @@ public abstract class ApiHandler implements HttpHandler {
 		} else if (obj instanceof Object[]) {
 			for (Object item : (Object[]) obj) {
 				files.add(new File(item.toString()));
+			}
+		}
+		if (files.isEmpty() && fallbackDir != null && !fallbackDir.isEmpty()) {
+			File folder = new File(fallbackDir);
+			File[] children = folder.listFiles();
+			if (children != null) {
+				for (File f : children) {
+					if (f.isFile()) {
+						files.add(f);
+					}
+				}
 			}
 		}
 		return files;

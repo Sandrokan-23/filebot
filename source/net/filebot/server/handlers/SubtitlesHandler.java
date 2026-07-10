@@ -26,7 +26,7 @@ public class SubtitlesHandler extends ApiHandler {
 	protected Object handle(Map<String, Object> params) throws Exception {
 		CmdlineOperations cli = new CmdlineOperations();
 
-		List<File> files = toFileList(params.get("files"));
+		List<File> files = toFileList(params.get("files"), settings.getWorkingDirectory());
 		String query = getString(params, "query");
 
 		String langStr = getString(params, "lang", settings.getSubtitlesLanguage());
